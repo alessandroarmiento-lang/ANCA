@@ -1,27 +1,29 @@
 # ANCA 1.0 — Armiento Non-Commercial Attribution License
 
-Licenza riusabile per i progetti **pubblici** di Alessandro Armiento.
+Reusable license for Alessandro Armiento’s **public** projects.
 
-- Uso personale, educativo e di ricerca: consentito
-- Uso commerciale: vietato
-- Crediti: devono restare visibili nell’interfaccia primaria (vedi `CREDITS.md` del progetto)
+- Personal, educational, and research use: allowed
+- Commercial use: forbidden
+- Credits: must stay visible in the primary UI (see each project’s `CREDITS.md`)
 
-## Repo
+## Repository
 
-- GitHub: https://github.com/alessandroarmiento-lang/ANCA  
-- Testo ufficiale: [`LICENSE`](LICENSE)
+- GitHub: https://github.com/alessandroarmiento-lang/ANCA
+- Canonical text: [`LICENSE`](LICENSE)
 
-## Come applicarla a un progetto
+## How to apply it to a project
 
-Solo quando Alessandro lo chiede esplicitamente (progetto da rendere pubblico):
+Only when Alessandro explicitly asks to make a project public:
 
-1. Copia `LICENSE` dalla root di questo repo nella root del progetto.
-2. Nel `README` del progetto punta a quel file e riassumi: free non-commercial + crediti visibili.
-3. Assicurati che esista `CREDITS.md` (o equivalente) e che i crediti siano in UI.
-4. Se il repo era privato, rendilo pubblico su GitHub.
+1. Copy `LICENSE` from this repo’s root into the project root.
+2. In the project README, point to that file and summarize: free non-commercial use + visible credits.
+3. Ensure `CREDITS.md` (or equivalent) exists and credits appear in the UI.
+4. If the repo was private, make it public on GitHub.
 
-Non applicarla di default a progetti nuovi o privati (Minda, Rigo, ecc. restano All Rights Reserved / privati finché non indicato altrimenti).
+Do not apply it by default to new or private projects (Minda, Rigo, and similar stay All Rights Reserved / private until stated otherwise).
 
-## Nome breve
+## Short name
 
 **ANCA 1.0** = Armiento Non-Commercial Attribution License, version 1.0.
+
+Public GitHub documentation for this and every other public repo must be **English only** (no Italian/English mix).
