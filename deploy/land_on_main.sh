@@ -34,18 +34,38 @@ if [[ "$src" == "HEAD" ]]; then
 fi
 
 PUSH_HELPER=()
-if command -v gh >/dev/null 2>&1; then
+origin_url="$(git remote get-url origin 2>/dev/null || true)"
+if [[ "$origin_url" == *origin.cursor.com* ]] && command -v origin >/dev/null 2>&1; then
+  ORIGIN_BIN="$(command -v origin)"
+  PUSH_HELPER=(-c "credential.helper=" -c "credential.helper=!${ORIGIN_BIN} credential-helper")
+elif command -v gh >/dev/null 2>&1; then
   PUSH_HELPER=(-c "credential.helper=" -c "credential.helper=!$(command -v gh) auth git-credential")
 fi
+
+run_after_land() {
+  local hook="$ROOT/deploy/product/after_land.sh"
+  if [[ -x "$hook" ]]; then
+    "$hook" || exit 1
+  fi
+}
 
 if [[ "$src" == "main" ]]; then
   git fetch origin main --quiet || true
   if git "${PUSH_HELPER[@]}" push origin main; then
     echo "LAND_ON_MAIN: already on main — pushed"
-  else
-    echo "LAND_ON_MAIN: already on main — push failed or nothing to push"
+    run_after_land
+    exit 0
   fi
-  exit 0
+  # Report the difference instead of a maybe: "nothing to push" and "origin refused it"
+  # cannot be told apart from the caller, and one of them means the work is not landed.
+  if git rev-parse --verify origin/main >/dev/null 2>&1 \
+    && git merge-base --is-ancestor HEAD origin/main; then
+    echo "LAND_ON_MAIN: already on main — nothing to push"
+    run_after_land
+    exit 0
+  fi
+  echo "LAND_ON_MAIN: push to main failed — work is NOT on origin/main"
+  exit 1
 fi
 
 if ! git remote get-url origin >/dev/null 2>&1; then
@@ -55,8 +75,14 @@ fi
 
 git fetch origin --prune
 
-if git rev-parse --verify "origin/${src}" >/dev/null 2>&1; then
-  git branch -f "$src" "origin/${src}" 2>/dev/null || true
+if git rev-parse --verify "origin/${src}" >/dev/null 2>&1 && git rev-parse --verify "$src" >/dev/null 2>&1; then
+  # Only fast-forward the local branch to the remote. Resetting it unconditionally
+  # threw away local commits that had not been pushed yet.
+  if git merge-base --is-ancestor "$src" "origin/${src}"; then
+    git branch -f "$src" "origin/${src}" 2>/dev/null || true
+  else
+    echo "LAND_ON_MAIN: local ${src} has commits not on origin/${src} — keeping local, push it first"
+  fi
 fi
 if ! git rev-parse --verify "$src" >/dev/null 2>&1; then
   echo "LAND_ON_MAIN: unknown branch ${src}"
@@ -91,4 +117,5 @@ fi
 
 git checkout "$here" 2>/dev/null || git checkout "$src" 2>/dev/null || true
 echo "LAND_ON_MAIN: ${src} → origin/main OK"
+run_after_land
 exit 0
